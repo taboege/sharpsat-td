@@ -108,7 +108,7 @@ Instance::Instance(int vars_) : vars(vars_) {}
 
 Instance::Instance(string input_file, bool weighted_) {
 	weighted = weighted_;
-	std::ifstream in(input_file);
+	std::ifstream in(input_file == "-" ? "/dev/stdin" : input_file);
 	string tmp;
 	vector<Lit> cur_clause;
 	int pline_clauses = 0;

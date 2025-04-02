@@ -10,6 +10,8 @@
 #include <algorithm>
 #include <sstream>
 
+extern std::string TW_BINARY;
+
 using Graph = vector<vector<int>>;
 
 namespace decomp {
@@ -165,8 +167,7 @@ pair<int, vector<int>> Treewidth(const Graph& graph, double time) {
 		}
 	}
 	out.close();
-	string tw_binary = "../../../flow-cutter-pace17/flow_cutter_pace17";
-	string cmd = "timeout " + to_string(time) + "s " + tw_binary + " <" + tmp1 + " >" + tmp2 + " 2>/dev/null";
+	string cmd = "timeout " + to_string(time) + "s " + TW_BINARY + " <" + tmp1 + " >" + tmp2 + " 2>/dev/null";
 	cout << "CMD:" << endl;
 	cout << cmd << endl;
 	int status = system(cmd.c_str());
@@ -219,8 +220,8 @@ pair<int, vector<int>> Treewidth(const Graph& graph, double time) {
 		}
 	}
 	in.close();
-	system(("rm -f " + tmp1).c_str());
-	system(("rm -f " + tmp2).c_str());
+	//system(("rm -f " + tmp1).c_str());
+	//system(("rm -f " + tmp2).c_str());
 	assert(bags[0].empty());
 	assert(tree[0].empty());
 	int centroid = 0;

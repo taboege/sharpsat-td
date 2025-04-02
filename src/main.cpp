@@ -22,6 +22,8 @@
 
 using namespace std;
 
+string VERSION = "v2021.1";
+string TW_BINARY = "./flow_cutter_pace17";
 
 void PrintSat(bool sat) {
   if (sat) {
@@ -88,12 +90,11 @@ int main(int argc, char *argv[]) {
   cout<<std::setprecision(16);
   sspp::Timer glob_timer;
   glob_timer.start();
-  string input_file;
+  string input_file = "-"; // default to stdin
 
   // Randomness used only for component hashing
   std::mt19937_64 gen(1337);
 
-  string tmp_dir;
   double decot = -1;
 
   SolverConfiguration config_;
@@ -103,24 +104,27 @@ int main(int argc, char *argv[]) {
   int weighted = 0;
 
   for (int i = 1; i < argc; i++) {
-    if (strcmp(argv[i], "-WD") == 0) {
+    if (strcmp(argv[i], "-V") == 0) {
+      cout << "sharpSAT-TD " << VERSION << endl;
+      return 0;
+    } else if (strcmp(argv[i], "-WD") == 0) {
       assert(weighted == 0);
       weighted = 1;
     } else if (strcmp(argv[i], "-WE") == 0) {
       assert(weighted == 0);
       weighted = 2;
-    } else if (strcmp(argv[i], "-tmpdir") == 0) {
+    } else if (strcmp(argv[i], "-tw") == 0) {
       if (argc <= i + 1) {
         cout << " wrong parameters" << endl;
         return -1;
       }
-      tmp_dir = string(argv[i+1]);
+      TW_BINARY = argv[++i];
     } else if (strcmp(argv[i], "-cs") == 0) {
       if (argc <= i + 1) {
         cout << " wrong parameters" << endl;
         return -1;
       }
-      max_cache = atol(argv[i + 1]) * (uint64_t) 1000000;
+      max_cache = atol(argv[++i]) * (uint64_t) 1000000;
       // theSolver.statistics().maximum_cache_size_bytes_ = atol(argv[i + 1]) * (uint64_t) 1000000;
     } else if (strcmp(argv[i], "-nofreq") == 0) {
       assert(config_.vsads_freq == true);
@@ -166,7 +170,6 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  assert(!tmp_dir.empty());
   assert(decot > 0.0001 && decot < 10000);
 
   if (weighted == 0) {
@@ -194,7 +197,7 @@ int main(int argc, char *argv[]) {
       return 0;
     }
     sspp::Graph primal(ins.vars, ins.clauses);
-    sspp::TreeDecomposition tdecomp = sspp::decomp::Treedecomp(primal, decot, tmp_dir);
+    sspp::TreeDecomposition tdecomp = sspp::decomp::Treedecomp(primal, decot);
     cout<<"c o Now solving. "<<glob_timer.get()<<endl;
     Solver<Smpz> theSolver(gen);
     theSolver.config() = config_;
@@ -235,7 +238,7 @@ int main(int argc, char *argv[]) {
       return 0;
     }
     sspp::Graph primal(ins.vars, ins.clauses);
-    sspp::TreeDecomposition tdecomp = sspp::decomp::Treedecomp(primal, decot, tmp_dir);
+    sspp::TreeDecomposition tdecomp = sspp::decomp::Treedecomp(primal, decot);
     cout<<"c o Now solving. "<<glob_timer.get()<<endl;
     if (weighted == 1) {
       Solver<SDouble> theSolver(gen);

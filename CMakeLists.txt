@@ -50,3 +50,5 @@ if(STATIC)
 SET_TARGET_PROPERTIES (flow_cutter_pace17 PROPERTIES LINK_SEARCH_START_STATIC 1)
 endif(STATIC)
 target_link_libraries (flow_cutter_pace17 libflowcutter)
+
+install(TARGETS sharpSAT flow_cutter_pace17)
